@@ -58,7 +58,7 @@ export class QuoteService {
     await this.quoteRepository.save(quote);
 
     //Sync changes to Query database
-    // await this.pubSubService.publishMessage(this.QUOTE_PUB_SUB_TOPIC, quote);
+    await this.pubSubService.publishMessage(this.QUOTE_PUB_SUB_TOPIC, quote);
 
     // Mock flow of products being returned by PAS
     const products = this.getProducts(selectedProductId);
