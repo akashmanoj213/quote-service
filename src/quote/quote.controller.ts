@@ -4,10 +4,11 @@ import { CreateQuoteDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto } from './dto/update-quote.dto';
 import { QuoteChangeEvent } from './dto/quote-change-event.dto';
 import { CreateQuoteDocumentDto } from './dto/create-quote-document.dto';
+import { Quote } from './entities/quote.entity';
 
 @Controller('quote')
 export class QuoteController {
-  constructor(private readonly quoteService: QuoteService) {}
+  constructor(private readonly quoteService: QuoteService) { }
 
   @Post()
   create(@Body() createQuoteDto: CreateQuoteDto) {
@@ -36,17 +37,20 @@ export class QuoteController {
 
   @Post("event-handler")
   eventHandler(@Body() event: QuoteChangeEvent) {
-    console.log("event : ", event);
     const { message: { data } } = event;
-    const parsedData: CreateQuoteDocumentDto = formatMessageData(data);
-    console.log("parsed data", parsedData);
+    const parsedData: CreateQuoteDocumentDto = this.formatMessageData(data);
+    console.log("parsed data:", parsedData);
 
     const { id } = parsedData;
 
     return this.quoteService.syncQueryDatabase(id, parsedData);
   }
-}
-function formatMessageData(data: any): CreateQuoteDocumentDto {
-  throw new Error('Function not implemented.');
-}
 
+  formatMessageData(data: string): CreateQuoteDocumentDto {
+    const bufferObj = Buffer.from(data, "base64");
+    const decodedData = bufferObj.toString("utf8");
+    const jsonObj = JSON.parse(decodedData);
+
+    return jsonObj;
+  }
+}

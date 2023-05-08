@@ -4,7 +4,7 @@ import { Nominee } from "./nominee.entity";
 import { Rider } from "./rider.entity";
 
 export enum InsuranceType {
-    INDIVIDUAL = "individual",
+    FAMILY = "family",
     SELF = "self"
 }
 
