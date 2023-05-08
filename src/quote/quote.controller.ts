@@ -35,10 +35,10 @@ export class QuoteController {
   }
 
   @Post("event-handler")
-  eventHandler(@Body() event) {
+  eventHandler(@Body() event: QuoteChangeEvent) {
     console.log("event : ", event);
     const { message: { data } } = event;
-    const parsedData: CreateQuoteDocumentDto = JSON.parse(data);
+    const parsedData: CreateQuoteDocumentDto = formatMessageData(data);
     console.log("parsed data", parsedData);
 
     const { id } = parsedData;
@@ -46,3 +46,7 @@ export class QuoteController {
     return this.quoteService.syncQueryDatabase(id, parsedData);
   }
 }
+function formatMessageData(data: any): CreateQuoteDocumentDto {
+  throw new Error('Function not implemented.');
+}
+

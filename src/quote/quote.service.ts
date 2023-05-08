@@ -219,4 +219,12 @@ export class QuoteService {
 
     return products;
   }
+
+  formatMessageData(data) {
+    const bufferObj = Buffer.from(data, "base64");
+    const decodedData = bufferObj.toString("utf8");
+    const jsonObj = JSON.parse(decodedData);
+
+    return jsonObj;
+}
 }
