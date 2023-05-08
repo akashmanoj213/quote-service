@@ -39,7 +39,7 @@ export class QuoteController {
   eventHandler(@Body() event: QuoteChangeEvent) {
     const { message: { data } } = event;
     const parsedData: CreateQuoteDocumentDto = this.formatMessageData(data);
-    console.log("parsed data:", parsedData);
+    console.log("parsed data :", parsedData);
 
     const { id } = parsedData;
 
