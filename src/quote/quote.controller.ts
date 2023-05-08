@@ -35,7 +35,8 @@ export class QuoteController {
   }
 
   @Post("event-handler")
-  eventHandler(@Body() event: QuoteChangeEvent) {
+  eventHandler(@Body() event) {
+    console.log("event : ", event);
     const { message: { data } } = event;
     const parsedData: CreateQuoteDocumentDto = JSON.parse(data);
     console.log("parsed data", parsedData);
