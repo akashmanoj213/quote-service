@@ -11,14 +11,14 @@ import { Rider } from './quote/entities/rider.entity';
 @Module({
   imports: [QuoteModule, TypeOrmModule.forRoot({
     type: 'postgres',
-    // host: '/cloudsql/pruinhlth-nprd-dev-scxlyx-7250:asia-south1:sahi-dev',
-    host: 'localhost',
+    host: '/cloudsql/pruinhlth-nprd-dev-scxlyx-7250:asia-south1:sahi-dev',
+    // host: 'localhost',
     port: 5432,
-    // username: 'sahi-user',
-    // password: 'qwerty',
-    username: 'postgres',
+    username: 'sahi-user',
     password: 'qwerty',
-    database: 'postgres',
+    // username: 'postgres',
+    // password: 'qwerty',
+    database: 'Quotes',
     entities: [Quote, User, InsurableParty, Rider],
     synchronize: true
   })],
