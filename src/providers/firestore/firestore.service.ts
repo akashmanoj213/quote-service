@@ -1,6 +1,5 @@
 import { Firestore } from "@google-cloud/firestore";
 import { Injectable } from "@nestjs/common";
-import { CreateQuoteDocumentDto } from "src/quote/dto/create-quote-document.dto";
 
 @Injectable() 
 export class FirestoreService {
@@ -14,14 +13,14 @@ export class FirestoreService {
           });
     }
 
-    async createOrUpdate(collectionName: string, quoteId: number, quote: CreateQuoteDocumentDto) {
-        const res = await this.db.collection(collectionName).doc(quoteId.toString()).set(quote);
+    async createOrUpdate<T>(collectionName: string, id: number, entity: T) {
+        const res = await this.db.collection(collectionName).doc(id.toString()).set(entity);
         return res;
     }
 
-    async findById(collectionName: string, quoteId: number) {
-        const quoteRef = this.db.collection(collectionName).doc(quoteId.toString());
-        const doc = await quoteRef.get();
+    async findById(collectionName: string, id: number) {
+        const collectionRef = this.db.collection(collectionName).doc(id.toString());
+        const doc = await collectionRef.get();
         const data = doc.data();
         const exists = doc.exists;
 
@@ -32,15 +31,15 @@ export class FirestoreService {
     }
 
     async findAll(collectionName: string) {
-        const quotesRef = this.db.collection(collectionName);
-        const snapshot = await quotesRef.get();
+        const collectionRef = this.db.collection(collectionName);
+        const snapshot = await collectionRef.get();
 
-        const quotes = [];
+        const entities = [];
         snapshot.forEach(doc => {
             console.log(doc.id, '=>', doc.data());
-            quotes.push(doc.data());
+            entities.push(doc.data());
           });
 
-        return quotes;
+        return entities;
     }
 }
