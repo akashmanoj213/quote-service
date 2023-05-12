@@ -1,4 +1,4 @@
-import { Relationship } from "../entities/nominee.entity";
+import { Relationship } from "../entities/insurable-party.entity";
 import { InsuranceType } from "../entities/quote.entity";
 
 export class CreateQuoteDocumentDto {

@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./user.entity";
-import { Nominee } from "./nominee.entity";
+import { InsurableParty } from "./insurable-party.entity";
 import { Rider } from "./rider.entity";
 
 export enum InsuranceType {
@@ -49,8 +49,8 @@ export class Quote {
     @OneToOne(type => User, user => user.quote, { cascade: true })
     @JoinColumn()
     user: User
-    @OneToMany(type => Nominee, nominee => nominee.quote, { cascade: true })
-    nominees: Nominee[]
+    @OneToMany(type => InsurableParty, nominee => nominee.quote, { cascade: true })
+    insurableParties: InsurableParty[]
     @OneToMany(type => Rider, rider => rider.quote, { cascade: true })
     riders?: Rider[]
 }

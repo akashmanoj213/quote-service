@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Quote } from './entities/quote.entity';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { Relationship } from './entities/nominee.entity';
+import { Relationship } from './entities/insurable-party.entity';
 import { PubSubService } from 'src/providers/pub-sub/pub-sub.service';
 import { FirestoreService } from 'src/providers/firestore/firestore.service';
 
@@ -14,7 +14,6 @@ export class QuoteService {
   readonly QUOTE_PUB_SUB_TOPIC = "quote-changes";
   readonly QUOTE_COLLECTION = "quotes"
   readonly PROJECT_ID = "pruinhlth-nprd-dev-scxlyx-7250";
-  private db;
 
   constructor(
     @InjectRepository(Quote)
@@ -50,7 +49,7 @@ export class QuoteService {
       type,
       preExistingDiseases,
       user,
-      nominees,
+      insurableParties: nominees,
       numberOfAdults,
       numberOfChildren
     }
@@ -81,7 +80,7 @@ export class QuoteService {
   }
 
   async update(quoteId: number, updateQuoteDto: UpdateQuoteDto) {
-    const { sumInsured, selectedProductId = null, riders = null, tenure = null } = updateQuoteDto;
+    const { sumInsured, selectedProductId, riders, tenure } = updateQuoteDto;
 
     const quote = await this.quoteRepository.findOneBy({
       id: quoteId

@@ -9,7 +9,8 @@ export class FirestoreService {
 
     constructor() {
         this.db = new Firestore({
-            projectId: this.PROJECT_ID
+            projectId: this.PROJECT_ID,
+            ignoreUndefinedProperties: true
           });
     }
 

@@ -14,7 +14,7 @@ export enum Relationship {
 }
 
 @Entity()
-export class Nominee {
+export class InsurableParty {
     @PrimaryGeneratedColumn()
     id?: number;
     @Column({
@@ -29,6 +29,6 @@ export class Nominee {
     dob: Date;
     @CreateDateColumn()
     createdAt?: Date;
-    @ManyToOne(type=> Quote, quote => quote.nominees)
+    @ManyToOne(type  => Quote, quote => quote.insurableParties)
     quote?: Quote
 }

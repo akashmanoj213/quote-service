@@ -1,13 +1,17 @@
-import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Quote } from "./quote.entity";
 
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
     id?: number;
-    @Column()
+    @Column({
+        nullable: true
+    })
     firstName: string;
-    @Column()
+    @Column({
+        nullable: true
+    })
     lastName: string;
     @Column()
     gender: string;

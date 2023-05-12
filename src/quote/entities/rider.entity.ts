@@ -13,6 +13,6 @@ export class Rider {
     price: number;
     @CreateDateColumn()
     createdAt?: Date;
-    @ManyToOne(type=> Quote, quote => quote.nominees)
+    @ManyToOne(type=> Quote, quote => quote.riders)
     quote?: Quote;
 }
