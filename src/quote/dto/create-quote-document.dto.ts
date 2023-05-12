@@ -24,7 +24,7 @@ export class CreateQuoteDocumentDto {
         email: string;
         createdAt: Date;
     };
-    nominees: Array<{
+    insurableParties: Array<{
         id: number;
         relationship: Relationship;
         dob: Date;

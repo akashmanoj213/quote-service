@@ -17,7 +17,7 @@ export class CreateQuoteDto {
     selectedProductId: number;
     numberOfChildren: number;
     numberOfAdults: number;
-    nominees: Array<{
+    insurableParties: Array<{
         relationship: Relationship;
         dob: Date;
     }>

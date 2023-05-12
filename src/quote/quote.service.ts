@@ -23,7 +23,7 @@ export class QuoteService {
   ) { }
 
   async create(createQuoteDto: CreateQuoteDto) {
-    const { firstName, lastName, gender, dob, pincode, mobileNumber, email, type, preExistingDiseases, selectedProductId, numberOfAdults = 1, numberOfChildren = 0, nominees = [] } = createQuoteDto;
+    const { firstName, lastName, gender, dob, pincode, mobileNumber, email, type, preExistingDiseases, selectedProductId, numberOfAdults = 1, numberOfChildren = 0, insurableParties = [] } = createQuoteDto;
 
     const user: User = {
       firstName,
@@ -37,19 +37,19 @@ export class QuoteService {
 
     // TO DO: publish an event for creating/updating user from this object
 
-    if (nominees.length === 0) {
-      nominees.push({
+    if (insurableParties.length === 0) {
+      insurableParties.push({
         dob,
         relationship: Relationship.SELF
       })
     }
-    // else case - check if the number of nominees === nunmberOfAdults + numberOfChildren
+    // else case - check if the number of insurableParties === nunmberOfAdults + numberOfChildren
 
     const quote: Quote = {
       type,
       preExistingDiseases,
       user,
-      insurableParties: nominees,
+      insurableParties,
       numberOfAdults,
       numberOfChildren
     }
@@ -82,8 +82,15 @@ export class QuoteService {
   async update(quoteId: number, updateQuoteDto: UpdateQuoteDto) {
     const { sumInsured, selectedProductId, riders, tenure } = updateQuoteDto;
 
-    const quote = await this.quoteRepository.findOneBy({
-      id: quoteId
+    const quote = await this.quoteRepository.findOne({
+      where: {
+        id: quoteId
+      },
+      relations: {
+        user: true,
+        insurableParties: true,
+        riders: true
+      }
     });
 
     quote.sumInsured = sumInsured;
@@ -100,7 +107,7 @@ export class QuoteService {
     const products = this.getProducts(selectedProductId);
     quoteRes["products"] = products;
 
-    //selects the price of the selectedProductId and adds up the cost of the selected riders
+    //select the price of the selectedProductId and adds up the cost of the selected riders
 
     return quoteRes;
   }

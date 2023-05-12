@@ -49,7 +49,7 @@ export class Quote {
     @OneToOne(type => User, user => user.quote, { cascade: true })
     @JoinColumn()
     user: User
-    @OneToMany(type => InsurableParty, nominee => nominee.quote, { cascade: true })
+    @OneToMany(type => InsurableParty, insruableParty => insruableParty.quote, { cascade: true })
     insurableParties: InsurableParty[]
     @OneToMany(type => Rider, rider => rider.quote, { cascade: true })
     riders?: Rider[]
