@@ -1,4 +1,4 @@
-export class QuoteChangeEvent {
+export class PubSubEvent {
     message: {
         attributes: {
             [key: string]: string

@@ -2,11 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { QuoteService } from './quote.service';
 import { CreateQuoteDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto } from './dto/update-quote.dto';
-import { QuoteChangeEvent } from './dto/quote-change-event.dto';
+import { PubSubEvent } from './dto/pub-sub-event.dto';
 import { CreateQuoteDocumentDto } from './dto/create-quote-document.dto';
-import { Quote } from './entities/quote.entity';
 
-@Controller('quote')
+@Controller('quotes')
 export class QuoteController {
   constructor(private readonly quoteService: QuoteService) { }
 
@@ -36,7 +35,7 @@ export class QuoteController {
   }
 
   @Post("event-handler")
-  eventHandler(@Body() event: QuoteChangeEvent) {
+  eventHandler(@Body() event: PubSubEvent) {
     const { message: { data } } = event;
     const parsedData: CreateQuoteDocumentDto = this.formatMessageData(data);
     console.log("parsed data :", parsedData);
