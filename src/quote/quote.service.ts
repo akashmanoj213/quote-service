@@ -12,6 +12,7 @@ import { FirestoreService } from 'src/providers/firestore/firestore.service';
 @Injectable()
 export class QuoteService {
   readonly QUOTE_PUB_SUB_TOPIC = "quote-changes";
+  readonly USER_PUB_SUB_TOPIC = "user-changes";
   readonly QUOTE_COLLECTION = "quotes"
   readonly PROJECT_ID = "pruinhlth-nprd-dev-scxlyx-7250";
 
@@ -58,6 +59,8 @@ export class QuoteService {
 
     //Sync changes to Query database
     await this.pubSubService.publishMessage(this.QUOTE_PUB_SUB_TOPIC, quote);
+    //Publish user details for user-service to save changes
+    await this.pubSubService.publishMessage(this.USER_PUB_SUB_TOPIC, user);
 
     // Mock flow of products being returned by PAS
     const products = this.getProducts(selectedProductId);

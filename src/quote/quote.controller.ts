@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException } from '@nestjs/common';
 import { QuoteService } from './quote.service';
 import { CreateQuoteDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto } from './dto/update-quote.dto';
@@ -11,6 +11,11 @@ export class QuoteController {
 
   @Post()
   create(@Body() createQuoteDto: CreateQuoteDto) {
+    const { mobileNumber } = createQuoteDto;
+    if(!mobileNumber) {
+      throw new BadRequestException("mobileNumber is missing in request body.");
+    }
+    
     return this.quoteService.create(createQuoteDto);
   }
 
@@ -38,7 +43,6 @@ export class QuoteController {
   eventHandler(@Body() event: PubSubEvent) {
     const { message: { data } } = event;
     const parsedData: CreateQuoteDocumentDto = this.formatMessageData(data);
-    console.log("parsed data :", parsedData);
 
     const { id } = parsedData;
 
