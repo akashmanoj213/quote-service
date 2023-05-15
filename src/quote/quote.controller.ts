@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { QuoteService } from './quote.service';
 import { CreateQuoteDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto } from './dto/update-quote.dto';
@@ -10,13 +10,18 @@ export class QuoteController {
   constructor(private readonly quoteService: QuoteService) { }
 
   @Post()
-  create(@Body() createQuoteDto: CreateQuoteDto) {
-    const { mobileNumber } = createQuoteDto;
-    if(!mobileNumber) {
-      throw new BadRequestException("mobileNumber is missing in request body.");
+  async create(@Body() createQuoteDto: CreateQuoteDto) {
+    try {
+      const { mobileNumber } = createQuoteDto;
+      
+      if (!mobileNumber) {
+        throw new BadRequestException("mobileNumber is missing in request body.");
+      }
+
+      return await this.quoteService.create(createQuoteDto);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
-    return this.quoteService.create(createQuoteDto);
   }
 
   @Get()

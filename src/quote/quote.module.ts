@@ -8,12 +8,14 @@ import { InsurableParty } from './entities/insurable-party.entity';
 import { Rider } from './entities/rider.entity';
 import { PubSubModule } from 'src/providers/pub-sub/pub-sub.module';
 import { FirestoreModule } from 'src/providers/firestore/firestore.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Quote, User, InsurableParty, Rider]),
     PubSubModule,
-    FirestoreModule
+    FirestoreModule,
+    HttpModule
   ],
   controllers: [QuoteController],
   providers: [QuoteService]
