@@ -47,6 +47,10 @@ export class QuoteService {
       email
     };
 
+    const updateUserEventData = {
+      ...user
+    }
+
     // TO DO: publish an event for creating/updating user from this object
 
     if (insurableParties.length === 0) {
@@ -71,7 +75,7 @@ export class QuoteService {
     //Sync changes to Query database
     await this.pubSubService.publishMessage(this.QUOTE_PUB_SUB_TOPIC, quote);
     //Publish user details for user-service to save changes
-    await this.pubSubService.publishMessage(this.USER_PUB_SUB_TOPIC, user);
+    await this.pubSubService.publishMessage(this.USER_PUB_SUB_TOPIC, updateUserEventData);
 
     // Mock flow of products being returned by PAS
     const { years: age } = dateOfBirth.diffNow('years');
