@@ -13,6 +13,29 @@ import { ProductRecommendationDto } from './dto/product-recommendation.dto';
 import { DateTime } from "luxon";
 import { firstValueFrom } from 'rxjs';
 
+export type Products = Array<{
+  id: number;
+  name: string;
+  description: string;
+  basePrice: number;
+  tenures: Array<{
+    duration: number;
+    price: number;
+  }>,
+  features: Array<{
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+  }>,
+  riders: Array<{
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+  }>
+}>;
+
 @Injectable()
 export class QuoteService {
   readonly QUOTE_PUB_SUB_TOPIC = "quote-changes";
@@ -33,7 +56,7 @@ export class QuoteService {
 
     const dateOfBirth = DateTime.fromISO(dob);
 
-    if(dateOfBirth.invalid) {
+    if (dateOfBirth.invalid) {
       throw new Error(dateOfBirth.invalid.explanation);
     }
 
@@ -84,8 +107,8 @@ export class QuoteService {
       selectedProductId,
       gender,
       age: +(Math.abs(age).toFixed())
-    } 
-    const { data: products} = await this.getProducts(productRecommendationDto);
+    }
+    const { data: products } = await this.getProducts(productRecommendationDto);
     quote["products"] = products;
 
     return quote;
@@ -107,7 +130,7 @@ export class QuoteService {
   async update(quoteId: number, updateQuoteDto: UpdateQuoteDto) {
     const { sumInsured, selectedProductId, riders, tenure } = updateQuoteDto;
 
-    const quote = await this.quoteRepository.findOne({
+    let quote = await this.quoteRepository.findOne({
       where: {
         id: quoteId
       },
@@ -118,17 +141,11 @@ export class QuoteService {
       }
     });
 
-    quote.sumInsured = sumInsured;
-    quote.selectedProductId = selectedProductId;
-    quote.riders = riders;
-    quote.tenure = tenure;
-
-    const quoteRes = await this.quoteRepository.save(quote);
-
-    const { user: {dob, gender} } = quote;
+    const { user: { dob, gender } } = quote;
 
     const dateOfBirth = DateTime.fromISO(dob);
     const { years: age } = dateOfBirth.diffNow('years');
+
     const productRecommendationDto: ProductRecommendationDto = {
       sumInsured,
       selectedProductId,
@@ -136,16 +153,42 @@ export class QuoteService {
       age
     }
 
+    // Mock flow of products being returned by PAS
+    const { data: products } = await this.getProducts(productRecommendationDto);
+
+    if (!products.length) {
+      throw new Error("No product record found !");
+    }
+
+    let totalPrice = selectedProductId ? products[0].basePrice : 0;
+
+    if (riders && riders.length) {
+      const { riders: productRiders } = products[0];
+      const selectedRiders = riders.map(rider => rider.riderId);
+
+      productRiders.forEach(rider => {
+        if (selectedRiders.includes(rider.riderId)) {
+          totalPrice += rider.price;
+        }
+      });
+    }
+
+    quote = {
+      ...quote,
+      ...sumInsured && { sumInsured },
+      ...selectedProductId && { selectedProductId },
+      ...riders && { riders },
+      ...tenure && { tenure },
+      ...totalPrice && { totalPrice }
+    }
+
+    await this.quoteRepository.save(quote);
+    quote["products"] = products;
+
     //Sync changes to Query database
     await this.pubSubService.publishMessage(this.QUOTE_PUB_SUB_TOPIC, quote);
 
-    // Mock flow of products being returned by PAS
-    const products = await this.getProducts(productRecommendationDto);
-    quoteRes["products"] = products;
-
-    //select the price of the selectedProductId and adds up the cost of the selected riders
-
-    return quoteRes;
+    return quote;
   }
 
   async publishEvent(quote) {
@@ -163,106 +206,5 @@ export class QuoteService {
   async getProducts(productRecommendationDto: ProductRecommendationDto) {
     const products = await firstValueFrom(this.httpService.post('https://product-service-dnhiaxv6nq-uc.a.run.app/products/recommendation', productRecommendationDto));
     return products;
-
-
-    // let products: Array<{
-    //   id: number;
-    //   name: string;
-    //   description: string;
-    //   tenures: Array<{
-    //     duration: number;
-    //     price: number;
-    //   }>,
-    //   riders: Array<{
-    //     id: number;
-    //     name: string;
-    //     description: string;
-    //     price: number;
-    //   }>
-    // }>;
-
-    // if (selectedProductId) {
-    //   products = [
-    //     {
-    //       id: 1001,
-    //       name: "Health care product",
-    //       description: "Covers all kinds of health issues.",
-    //       tenures: [
-    //         {
-    //           duration: 12,
-    //           price: 12000
-    //         },
-    //         {
-    //           duration: 24,
-    //           price: 20000
-    //         }
-    //       ],
-    //       riders: [
-    //         {
-    //           id: 2011,
-    //           name: "Ambulance service",
-    //           description: "24 hr ambulance charges covered",
-    //           price: 200
-    //         }
-    //       ]
-    //     }
-    //   ]
-    // } else {
-    //   products = [
-    //     {
-    //       id: 1001,
-    //       name: "Health care product",
-    //       description: "Covers all kinds of health issues.",
-    //       tenures: [
-    //         {
-    //           duration: 12,
-    //           price: 12000
-    //         },
-    //         {
-    //           duration: 24,
-    //           price: 20000
-    //         }
-    //       ],
-    //       riders: [
-    //         {
-    //           id: 2011,
-    //           name: "Ambulance service",
-    //           description: "24 hr ambulance charges covered",
-    //           price: 200
-    //         }
-    //       ]
-    //     }, {
-    //       id: 1002,
-    //       name: "Cancer care product",
-    //       description: "Covers all kinds of cancer related issues.",
-    //       tenures: [
-    //         {
-    //           duration: 12,
-    //           price: 13000
-    //         },
-    //         {
-    //           duration: 24,
-    //           price: 24000
-    //         }
-    //       ],
-    //       riders: [
-    //         {
-    //           id: 2011,
-    //           name: "Ambulance service",
-    //           description: "24 hr ambulance charges covered",
-    //           price: 200
-    //         },
-    //         {
-    //           id: 2012,
-    //           name: "Online consultation",
-    //           description: "Free online consultation",
-    //           price: 100
-    //         }
-    //       ]
-    //     }
-    //   ]
-    // }
-
-    // return products;
   }
 }

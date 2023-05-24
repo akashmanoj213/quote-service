@@ -35,8 +35,18 @@ export class QuoteController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateQuoteDto: UpdateQuoteDto) {
-    return this.quoteService.update(+id, updateQuoteDto);
+  async update(@Param('id') id: string, @Body() updateQuoteDto: UpdateQuoteDto) {
+    const { selectedProductId, riders } = updateQuoteDto;
+
+    if((selectedProductId && !riders) || (riders && !selectedProductId)) {
+      throw new BadRequestException("selectedProductId and riders have to be sent together!");
+    }
+
+    try {
+      return await this.quoteService.update(+id, updateQuoteDto);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Delete(':id')
